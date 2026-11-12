@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triagem de Inscrições Ituverava</title>
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#f1f3f6; --card:#fff; --field:#fff; --ink:#1c2430; --muted:#66748a; --line:#dfe4ec;
+    --brand:#1f5f9e; --brand-solid:#1f5f9e; --on-solid:#fff;
+    --header-bg:#1f5f9e; --header-ink:#fff;
+    --accent:#0f7b53; --danger:#b3261e; --danger-line:#f0c9c6; --danger-bg:#fdf3f2;
+    --hover:#f7fafd; --thead:#f7f9fc; --chip-bg:#eef3f9; --chip-ink:#1f5f9e;
+    --ok-bg:#f2faf6; --ok-chip:#e0f2e9;
+    --gold:#b07d00; --silver:#78838f; --bronze:#9a6b3f;
+    --toast-bg:#1c2430; --toast-ink:#fff; --vazio:#8b97a8;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 18px rgba(16,24,40,.06);
+    --r:10px;
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#111722; --card:#1a2130; --field:#141a27; --ink:#e6ebf3; --muted:#94a1b6; --line:#2c3648;
+    --brand:#7cb2ea; --brand-solid:#2f6fae; --on-solid:#fff;
+    --header-bg:#161e2c; --header-ink:#e6ebf3;
+    --accent:#4fc48c; --danger:#ef8f88; --danger-line:#57332f; --danger-bg:#2a1c1b;
+    --hover:#212a3b; --thead:#202939; --chip-bg:#22304a; --chip-ink:#9cc4ee;
+    --ok-bg:#172e26; --ok-chip:#1d3d31;
+    --gold:#e0b64a; --silver:#a9b4c2; --bronze:#cd9a6b;
+    --toast-bg:#334059; --toast-ink:#eef2f8; --vazio:#6f7d92;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+
+  header.top{background:var(--header-bg);color:var(--header-ink);padding:18px 16px;box-shadow:var(--shadow)}
+  header.top .inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:16px}
+  header.top .tit{flex:1;min-width:0}
+  header.top h1{margin:0;font-size:19px;letter-spacing:.2px}
+  header.top p{margin:3px 0 0;font-size:13px;opacity:.85}
+  #tema{flex:none;background:rgba(255,255,255,.12);color:inherit;border:1px solid rgba(255,255,255,.25);
+        padding:7px 14px;font-size:13px;border-radius:999px}
+  #tema:hover{background:rgba(255,255,255,.22)}
+  .sessao{display:flex;align-items:center;gap:8px;flex:none}
+  .sessao[hidden]{display:none}
+  #usuario{font-size:12px;opacity:.85}
+  #btnSair{background:rgba(255,255,255,.12);color:inherit;border:1px solid rgba(255,255,255,.25);
+           padding:7px 14px;font-size:13px;border-radius:999px}
+  #btnSair:hover{background:rgba(255,255,255,.22)}
+  @media(max-width:600px){#usuario{display:none}}
+  .login{max-width:420px;margin:40px auto 60px;padding:0 16px}
+  .login .f{margin-bottom:12px}
+  .erro{color:var(--danger);font-size:13px;margin:4px 0 0}
+  .carregando{text-align:center;color:var(--muted);margin:60px 16px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+        box-shadow:var(--shadow);padding:18px;margin-top:18px}
+  .card > h2{margin:0 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:.6px;
+             color:var(--brand);border-bottom:2px solid var(--line);padding-bottom:8px}
+  .card > h2 small{float:right;text-transform:none;letter-spacing:0;font-size:12px;
+             font-weight:400;color:var(--muted)}
+
+  .grid{display:grid;gap:12px 14px;grid-template-columns:repeat(12,1fr)}
+  .f{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .f label{font-size:12px;font-weight:600;color:var(--muted)}
+  input[type=text],input[type=email],input[type=password],input[type=date],input[type=number],select,textarea{
+    padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--field);color:inherit;width:100%}
+  textarea{resize:vertical;min-height:64px}
+  input:focus,select:focus,textarea:focus{outline:2px solid rgba(31,95,158,.35);border-color:var(--brand)}
+  .c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}
+  .c5{grid-column:span 5}.c6{grid-column:span 6}.c12{grid-column:span 12}
+  @media(max-width:860px){.grid > *{grid-column:span 12 !important}}
+
+  .critwrap{margin-bottom:7px}
+  .crit{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border:1px solid var(--line);
+        border-radius:8px;cursor:pointer;transition:.12s;background:var(--card)}
+  .crit:hover{border-color:var(--brand);background:var(--hover)}
+  .crit input{margin-top:3px;width:17px;height:17px;accent-color:var(--brand);flex:none}
+  .crit span.txt{flex:1}
+  .crit em.doc{display:block;font-size:12px;color:var(--muted);font-style:italic;margin-top:1px}
+  .peso{flex:none;background:var(--chip-bg);color:var(--chip-ink);border-radius:999px;padding:2px 10px;
+        font-size:12px;font-weight:700;white-space:nowrap}
+  .crit.on{border-color:var(--accent);background:var(--ok-bg)}
+  .crit.on .peso{background:var(--ok-chip);color:var(--accent)}
+  .crit.on em.doc{color:var(--accent)}
+
+  .sub{margin:6px 0 0 28px;padding:10px 12px;border:1px dashed var(--line);border-radius:8px;
+       background:var(--hover);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end}
+  .sub[hidden]{display:none}
+  .sub .f{flex:1 1 200px}
+  .sub .f.larga{flex:2 1 300px}
+  .tipos{display:flex;flex-wrap:wrap;gap:6px;padding-top:2px}
+  .tipos label{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:400;
+       color:var(--ink);border:1px solid var(--line);background:var(--card);
+       border-radius:999px;padding:4px 11px;cursor:pointer}
+  .tipos label:hover{border-color:var(--brand)}
+  .tipos input{width:15px;height:15px;accent-color:var(--brand);margin:0}
+  .sub .peso{align-self:center}
+
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+  button{font:inherit;font-weight:600;padding:9px 16px;border-radius:8px;border:1px solid transparent;cursor:pointer}
+  .btn-primary{background:var(--brand-solid);color:var(--on-solid)}
+  .btn-primary:hover{filter:brightness(1.12)}
+  .btn-ghost{background:var(--card);border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+  .btn-danger{background:var(--card);border-color:var(--danger-line);color:var(--danger)}
+  .btn-danger:hover{background:var(--danger-bg)}
+  .total{margin-left:auto;font-size:14px;color:var(--muted)}
+  .total b{font-size:24px;color:var(--accent);margin-left:6px;vertical-align:-2px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:var(--thead)}
+  tbody tr:hover{background:var(--hover)}
+  .pos{font-weight:700;text-align:center;width:56px}
+  .top1{color:var(--gold)}.top2{color:var(--silver)}.top3{color:var(--bronze)}
+  .pts{font-weight:700;color:var(--accent);text-align:center;width:90px;font-size:16px}
+  .docs{text-align:center;width:88px;white-space:nowrap}
+  .docs.ok{color:var(--accent);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:4px}
+  .chip{background:var(--chip-bg);color:var(--chip-ink);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500;white-space:nowrap}
+  .chip b{font-weight:700;margin-right:2px}
+  .chip.doc{background:var(--ok-chip);color:var(--accent)}
+  .tag-elim{display:inline-block;margin-top:4px;font-size:11px;font-weight:700;color:var(--danger);
+            background:var(--danger-bg);border:1px solid var(--danger-line);border-radius:6px;padding:1px 6px}
+  .insc{white-space:nowrap;width:110px}
+  @media(max-width:600px){.chip{white-space:normal}.insc{width:auto}th,td{padding:8px 6px}
+    .acts{width:auto}.acts button{display:block;width:100%;margin:2px 0}}
+  .crit .num{flex:none;min-width:22px;font-weight:700;color:var(--brand)}
+  .acts{white-space:nowrap;text-align:right;width:150px}
+  .acts button{padding:4px 9px;font-size:12px;font-weight:600}
+  .empty{padding:28px;text-align:center;color:var(--muted)}
+  .scroll{overflow-x:auto}
+
+  details.pesos{margin-top:14px}
+  details.pesos summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+    font:inherit;font-weight:600;padding:9px 16px;border-radius:8px;
+    background:var(--card);border:1px solid var(--line);color:var(--ink);
+    list-style:none;transition:.12s}
+  details.pesos summary::-webkit-details-marker{display:none}
+  details.pesos summary::before{content:"\2699";font-size:15px}
+  details.pesos summary::after{content:"\25BE";font-size:11px;opacity:.75;transition:transform .15s}
+  details.pesos summary:hover{border-color:var(--brand);color:var(--brand)}
+  details.pesos[open] summary{border-color:var(--brand);color:var(--brand)}
+  details.pesos[open] summary::after{transform:rotate(180deg)}
+  details.pesos[open] .painel{border:1px solid var(--line);border-radius:var(--r);
+    background:var(--bg);padding:14px 16px;margin-top:10px}
+  .pesolist{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;margin-top:10px}
+  .pesorow{display:flex;gap:8px;align-items:center;font-size:13px}
+  .pesorow input{width:74px;flex:none}
+  .pesorow span{flex:1;color:var(--muted)}
+  .pesorow.filho span{padding-left:14px;font-style:italic}
+
+  .hint{font-size:12px;color:var(--muted);margin:0 0 10px}
+  dialog{border:none;border-radius:12px;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.45);max-width:720px;width:92%;
+         background:var(--card);color:var(--ink)}
+  dialog::backdrop{background:rgba(16,24,40,.45)}
+  .dlg{padding:22px}
+  .dlg h3{margin:0 0 12px;color:var(--brand);font-size:16px}
+  .dl{display:grid;grid-template-columns:190px 1fr;gap:6px 12px;font-size:14px}
+  .dl dt{color:var(--muted);font-weight:600}
+  .dl dd{margin:0}
+  @media(max-width:560px){.dl{grid-template-columns:1fr}.dl dt{margin-top:8px}}
+  .dlg textarea{font:12px/1.45 Consolas,"Courier New",monospace;min-height:180px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--toast-bg);color:var(--toast-ink);padding:10px 18px;border-radius:999px;font-size:14px;
+    opacity:0;pointer-events:none;transition:.25s;z-index:99}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media print{
+    header.top,.bar,.acts,form.card,details.pesos,.noprint{display:none!important}
+    /* imprime sempre em claro, mesmo no modo noturno */
+    :root,:root[data-theme="dark"]{color-scheme:light;--bg:#fff;--card:#fff;--ink:#000;--muted:#555;
+      --line:#bbb;--thead:#eee;--hover:#fff;--chip-bg:#eee;--chip-ink:#000;--accent:#000;
+      --gold:#000;--silver:#000;--bronze:#000}
+    body{background:#fff;color:#000}
+    .card{box-shadow:none;border:none}
+    th,td{border-bottom:1px solid #bbb}
+  }
+</style>
+<script>
+  /* aplica o tema antes da página aparecer, para não piscar branco */
+  (function(){
+    var t;
+    try { t = localStorage.getItem('itu_tema'); } catch (e) {}
+    if (t !== 'dark' && t !== 'light') t = document.documentElement.getAttribute('data-theme');
+    if (t !== 'dark' && t !== 'light'){
+      t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+
+</head>
+<body>
+<header class="top"><div class="inner">
+  <div class="tit">
+    <h1>Protocolo de Recebimento da Inscrição — Anexo II</h1>
+    <p>Prefeitura Municipal de Ituverava/SP · Preenchimento, pontuação e ranking de prioridade</p>
+  </div>
+  <div class="sessao" id="sessao" hidden>
+    <span id="usuario"></span>
+    <button type="button" id="btnSair">Sair</button>
+  </div>
+  <button type="button" id="tema" title="Alternar entre modo claro e noturno">Modo noturno</button>
+</div></header>
+
+<p class="carregando" id="carregando">Carregando…</p>
+
+<div class="login" id="telaLogin" hidden>
+  <form class="card" id="formLogin" novalidate>
+    <h2>Entrar</h2>
+    <p class="hint">Use o e-mail e a senha liberados pela coordenação.</p>
+    <div class="f"><label for="loginEmail">E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username" inputmode="email"></div>
+    <div class="f"><label for="loginSenha">Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password"></div>
+    <p class="erro" id="loginErro" hidden></p>
+    <div class="bar"><button type="submit" class="btn-primary" id="btnEntrar">Entrar</button></div>
+  </form>
+</div>
+
+<div class="wrap" id="app" hidden>
+
+<form class="card" id="form" autocomplete="off" novalidate>
+  <h2 id="formTitle">1 — Dados do Protocolo</h2>
+  <div class="grid">
+    <div class="f c3"><label>Número da inscrição</label><input type="text" id="inscricao" inputmode="numeric" placeholder="000/2026"></div>
+    <div class="f c6"><label>Nome do candidato</label><input type="text" id="nome"></div>
+    <div class="f c3"><label>Data</label><input type="date" id="data"></div>
+  </div>
+
+  <h2 style="margin-top:22px">2 — Documentação Recebida do Titular <small>conferência · não pontua</small></h2>
+  <p class="hint">Marque os documentos apresentados pelo candidato. Esta parte não pontua, mas aparece no ranking.</p>
+  <div id="documentos"></div>
+
+  <h2 style="margin-top:22px">3 — Documentos Pessoais dos Demais Membros da Família <small>parte que pontua</small></h2>
+  <p class="hint">Assinale as situações comprovadas pela família. Cada item vale os pontos indicados à direita — é daqui que sai o ranking.</p>
+  <div id="criterios"></div>
+
+  <div class="grid" style="margin-top:16px">
+    <div class="f c12"><label>Observações</label>
+      <textarea id="obs" placeholder="Anotações do atendimento, pendências de documentação…"></textarea></div>
+  </div>
+
+  <details class="pesos">
+    <summary>Ajustar pesos dos critérios</summary>
+    <div class="painel">
+      <p class="hint">Padrão: 10 pontos por item marcado. Criança ou adolescente, membros idosos e pessoas com deficiência valem 10 por pessoa, conforme a quantidade marcada (04 ou mais conta 4). Os tipos de deficiência estão em 0 porque só detalham o item; se pontuarem no seu processo, é só alterar aqui. A mudança recalcula automaticamente todas as fichas já cadastradas.</p>
+      <div class="pesolist" id="pesolist"></div>
+      <button type="button" class="btn-ghost" id="resetPesos" style="margin-top:12px">Restaurar pesos padrão</button>
+    </div>
+  </details>
+
+  <div class="bar">
+    <button type="submit" class="btn-primary" id="btnSalvar">Adicionar à lista</button>
+    <button type="button" class="btn-ghost" id="btnCancelar" hidden>Cancelar edição</button>
+    <button type="button" class="btn-ghost" id="btnLimpar">Limpar formulário</button>
+    <div class="total">Pontuação desta ficha: <b id="totalAtual">0</b> <span id="totalMax">de 170</span></div>
+  </div>
+</form>
+
+<section class="card">
+  <h2>Ranking de Prioridade</h2>
+  <div class="bar noprint" style="margin:0 0 12px">
+    <input type="text" id="busca" placeholder="Buscar por nome ou número da inscrição..." style="max-width:320px">
+    <button type="button" class="btn-ghost" id="btnCsv" title="Gera uma planilha que abre direto no Excel">Exportar Excel</button>
+    <button type="button" class="btn-ghost" id="btnBackup">Salvar backup</button>
+    <button type="button" class="btn-ghost" id="btnRestore">Importar backup</button>
+    <button type="button" class="btn-ghost" id="btnPrint">Imprimir ranking</button>
+    <button type="button" class="btn-danger" id="btnZerar">Apagar tudo</button>
+    <input type="file" id="fileIn" accept=".json" hidden>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr>
+        <th>Inscrição</th><th>Nome do candidato</th><th>Documentação pessoal</th><th>Documentação família</th><th class="pts">Pontuação</th><th class="acts noprint"></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="empty" id="vazio">Nenhuma ficha cadastrada ainda.</div>
+</section>
+
+</div>
+
+<dialog id="dlg"><div class="dlg">
+  <h3 id="dlgNome"></h3>
+  <dl class="dl" id="dlgBody"></dl>
+  <div class="bar"><button class="btn-primary" id="dlgFechar">Fechar</button></div>
+</div></dialog>
+
+<dialog id="dlgTxt"><div class="dlg">
+  <h3 id="txtTit"></h3>
+  <p class="hint" id="txtHint"></p>
+  <textarea id="txtArea" spellcheck="false"></textarea>
+  <div class="bar">
+    <button type="button" class="btn-primary" id="txtCopiar">Copiar tudo</button>
+    <button type="button" class="btn-ghost" id="txtImportar" hidden>Importar este backup</button>
+    <button type="button" class="btn-ghost" id="txtFechar">Fechar</button>
+  </div>
+</div></dialog>
+
+<dialog id="dlgConf"><div class="dlg">
+  <h3 id="confTit">Confirmar</h3>
+  <p id="confMsg" style="margin:0"></p>
+  <div class="bar">
+    <button type="button" class="btn-danger" id="confSim">Confirmar</button>
+    <button type="button" class="btn-ghost" id="confNao">Cancelar</button>
+  </div>
+</div></dialog>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ================= critérios, transcritos do Anexo II ================= */
+const DOCUMENTOS = [
+  {id:'d1', curto:'Identificação', txt:'Documento de identificação original e xerox com foto (RG, CNH ou documento oficial equivalente).'},
+  {id:'d2', curto:'CadÚnico', txt:'Comprovante de inscrição no CadÚnico (Folha Resumo).', doc:'emitida há no máximo 30 dias'},
+  {id:'d3', curto:'Comprovante de renda', txt:'Cópia dos comprovantes de renda do mês de setembro (contracheque, holerite ou carteira de trabalho assinada) ou declaração de autônomo ou MEI.', doc:'emitida pelo site ou aplicativo Meu INSS; renda bruta familiar mensal de até R$ 3.200,00'},
+  {id:'d4', curto:'Declaração autônomo/MEI', txt:'Declaração de autônomo, MEI ou trabalhador informal.'},
+  {id:'d5', curto:'Declaração de moradia', txt:'Declaração de moradia no município, assinada por órgão municipal, de no mínimo 5 anos, em nome do candidato.', doc:'comprova residência ininterrupta da família em Ituverava/SP no período'}
+];
+
+const QTD = ['01','02','03','04 ou mais'];
+
+const CRITERIOS = [
+  {id:'c1', curto:'Monoparental (mulher)', txt:'Família monoparental chefiada por mulher.', peso:10},
+  {id:'c2', curto:'Criança/adolescente', porQtd:'c2q', txt:'Possui criança ou adolescente na família (até 18 anos).', peso:10,
+   subs:[{id:'c2q', rot:'Crianças ou adolescentes na família', tipo:'qtd', opcoes:QTD, peso:0}]},
+  {id:'c4', curto:'Idosos na família', porQtd:'c4q', txt:'Membros da família idosos.', peso:10,
+   subs:[{id:'c4q', rot:'Idosos na família', tipo:'qtd', opcoes:QTD, peso:0}]},
+  {id:'c5', curto:'Violência doméstica', txt:'Mulher vítima de violência doméstica e familiar.', doc:'xerox do boletim de ocorrência ou equivalente', peso:10},
+  {id:'c6', curto:'Pessoa com deficiência', porQtd:'c6q', txt:'Pessoa com deficiência.', doc:'xerox do laudo médico atualizado', peso:10,
+   subs:[{id:'c6t', rot:'Tipo de deficiência', tipo:'tipos', opcoes:['Física','Mental','Espectro autista'], peso:0},
+         {id:'c6q', rot:'Pessoas com deficiência na família', tipo:'qtd', opcoes:QTD, peso:0}]},
+  {id:'c7', curto:'Câncer/doença rara', txt:'Pessoa com câncer ou doença rara crônica e degenerativa.', doc:'laudo médico atualizado com CID, grau de comprometimento e registro no órgão de classe, emitido há no máximo 24 meses', peso:10},
+  {id:'c8', curto:'Emergência/calamidade', txt:'Pessoa em situação de emergência ou calamidade formalmente reconhecida por Portaria.', peso:10},
+  {id:'c9', curto:'Deslocamento involuntário', txt:'Pessoa em deslocamento involuntário em razão de obras públicas municipais, estaduais ou federais.', peso:10},
+  {id:'c10', curto:'Área de risco', txt:'Pessoa residente em áreas de risco.', peso:10},
+  {id:'c11', curto:'Situação de rua', txt:'Pessoa em situação de rua.', peso:10},
+  {id:'c12', curto:'Comunidade tradicional', txt:'Pessoa integrante de comunidades tradicionais, quilombolas e povos indígenas.', doc:'apresentar autodeclaração', peso:10}
+];
+
+const OBRIGATORIOS = ['d1','d2','d5'];
+const faltando = docs => OBRIGATORIOS.filter(id => (docs || []).indexOf(id) < 0);
+function textoFalta(docs){
+  const n = faltando(docs).map(id => DOCUMENTOS.findIndex(d => d.id === id) + 1);
+  if (!n.length) return '';
+  return 'Falta documento ' + (n.length > 1 ? n.slice(0, -1).join(', ') + ' e ' + n[n.length - 1] : n[0]);
+}
+
+const SUBS = [];
+CRITERIOS.forEach(c => (c.subs || []).forEach(s => SUBS.push(Object.assign({pai:c.id}, s))));
+
+const PESOS_PADRAO = {};
+CRITERIOS.forEach(c => { PESOS_PADRAO[c.id] = c.peso; });
+SUBS.forEach(s => { PESOS_PADRAO[s.id] = s.peso; });
+
+const K_P = 'itu.pessoas.v1', K_W = 'itu.pesos.v1', K_T = 'itu_tema';
+
+const $ = s => document.querySelector(s);
+const $$ = s => [].slice.call(document.querySelectorAll(s));
+const load = (k, f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v === null ? f : v; } catch (e) { return f; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+let pesos   = Object.assign({}, PESOS_PADRAO);
+let pessoas = [];
+
+/* ---------- banco de dados (Supabase) ---------- */
+const SB_URL = 'https://ktsszkbbrdgnjrquxjni.supabase.co';
+const SB_KEY = 'sb_publishable_88cF3qTIZSz9peQgOuTIZQ_PWsJYO75';
+/* banco dividido com outra cidade: cada uma tem as próprias tabelas e a própria sessão */
+const T_FICHAS = 'ituverava_fichas', T_CONFIG = 'ituverava_configuracao', RPC_EQUIPE = 'eh_equipe_ituverava';
+const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, {auth: {storageKey: 'sb-ituverava-auth'}}) : null;
+let canal = null, usuarioAtual = null;
+
+const deDb = r => ({
+  id: r.id, inscricao: r.inscricao || '', nome: r.nome, data: r.data || '',
+  docs: r.docs || [], marcados: r.marcados || [], valores: r.valores || {},
+  obs: r.obs || '', criadoEm: r.criado_em
+});
+const paraDb = p => ({
+  inscricao: p.inscricao || '', nome: p.nome || '(sem nome)', data: p.data || null,
+  docs: p.docs || [], marcados: p.marcados || [], valores: p.valores || {}, obs: p.obs || ''
+});
+/* usado ao importar backup ou fichas antigas: mantém o registro e a ordem de cadastro */
+const paraDbComId = p => Object.assign({id: p.id ? String(p.id) : undefined, criado_em: p.criadoEm || undefined}, paraDb(p));
+
+function guardarLocal(p){
+  const i = pessoas.findIndex(x => x.id === p.id);
+  if (i > -1) pessoas[i] = p; else pessoas.push(p);
+}
+function falha(err, acao){
+  console.error(err);
+  toast('Não foi possível ' + (acao || 'salvar') + '. Verifique a internet e tente de novo.');
+}
+let tPesos = null;
+function salvarPesos(){
+  clearTimeout(tPesos);
+  tPesos = setTimeout(async () => {
+    const r = await sb.from(T_CONFIG).update({pesos: pesos}).eq('id', 1);
+    if (r.error) falha(r.error, 'salvar os pesos');
+  }, 600);
+}
+let editId  = null;
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* confirmação própria, no lugar do confirm() do navegador */
+function perguntar(msg, rotuloSim){
+  return new Promise(resolve => {
+    $('#confMsg').textContent = msg;
+    $('#confSim').textContent = rotuloSim || 'Confirmar';
+    const fim = ok => () => { $('#dlgConf').close(); resolve(ok); };
+    const sim = fim(true), nao = fim(false);
+    $('#confSim').onclick = sim;
+    $('#confNao').onclick = nao;
+    $('#dlgConf').oncancel = nao;
+    $('#dlgConf').showModal();
+    $('#confNao').focus();
+  });
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dataBR = s => s ? s.split('-').reverse().join('/') : '—';
+const hojeISO = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,10); };
+const nPeso = id => Number(pesos[id]) || 0;
+const idx = id => (id[0] === 'd' ? DOCUMENTOS : CRITERIOS).findIndex(c => c.id === id) + 1;
+const critTxt = id => (CRITERIOS.find(c => c.id === id) || {txt:''}).txt;
+const ptLabel = n => n + ' pt' + (n === 1 ? '' : 's');
+
+/* criança/adolescente e idosos valem o peso por pessoa; sem quantidade marcada conta 1 */
+const qtdItem = (p, c) => c.porQtd ? Math.max(1, parseInt((p.valores || {})[c.porQtd], 10) || 1) : 1;
+const ptsItem = (p, c) => nPeso(c.id) * qtdItem(p, c);
+
+/* pontos de uma ficha: item marcado vale o peso dele; subitem preenchido soma o peso dele */
+function pontos(p){
+  let t = 0;
+  const m = p.marcados || [], v = p.valores || {};
+  CRITERIOS.forEach(c => {
+    if (m.indexOf(c.id) < 0) return;
+    t += ptsItem(p, c);
+    (c.subs || []).forEach(s => {
+      if (s.id === c.porQtd) return;
+      const val = v[s.id];
+      const preenchido = Array.isArray(val) ? val.length > 0 : !!val;
+      if (preenchido) t += nPeso(s.id);
+    });
+  });
+  return t;
+}
+function pontosMax(){
+  let t = 0;
+  CRITERIOS.forEach(c => {
+    t += nPeso(c.id) * (c.porQtd ? QTD.length : 1);
+    (c.subs || []).forEach(s => { if (s.id !== c.porQtd) t += nPeso(s.id); });
+  });
+  return t;
+}
+
+/* ---------- montagem dos itens ---------- */
+function subHtml(c){
+  let h = '<div class="sub" data-sub="' + c.id + '" hidden>';
+  if (c.campo){
+    h += '<div class="f larga"><label>' + esc(c.campo.rot) + '</label>' +
+         '<input type="text" data-valor="' + c.campo.id + '" placeholder="' + esc(c.campo.ph || '') + '"></div>';
+  }
+  (c.subs || []).forEach(s => {
+    h += '<div class="f' + (s.tipo === 'tipos' ? ' larga' : '') + '"><label>' + esc(s.rot) + '</label>';
+    if (s.tipo === 'tipos'){
+      h += '<div class="tipos">' + s.opcoes.map(o =>
+        '<label><input type="checkbox" data-tipo="' + s.id + '" value="' + esc(o) + '">' + esc(o) + '</label>').join('') + '</div>';
+    } else {
+      h += '<select data-valor="' + s.id + '"><option value="">—</option>' +
+           s.opcoes.map(o => '<option>' + esc(o) + '</option>').join('') + '</select>';
+    }
+    h += '</div><span class="peso" data-peso="' + s.id + '"></span>';
+  });
+  return h + '</div>';
+}
+
+function itemHtml(c, pontua){
+  return '<div class="critwrap">' +
+    '<label class="crit"><input type="checkbox" value="' + c.id + '">' +
+      '<span class="num">' + idx(c.id) + '.</span>' +
+      '<span class="txt">' + esc(c.txt) + (c.doc ? '<em class="doc">' + esc(c.doc) + '</em>' : '') + '</span>' +
+      (pontua ? '<span class="peso" data-peso="' + c.id + '"></span>' : '') +
+    '</label>' +
+    ((c.campo || c.subs) ? subHtml(c) : '') +
+  '</div>';
+}
+
+function render(sel, itens, pontua){
+  $(sel).innerHTML = itens.map(c => itemHtml(c, pontua)).join('');
+  $$(sel + ' .crit input').forEach(i => {
+    i.addEventListener('change', () => { sincronizarItem(i); calcAtual(); });
+  });
+  $$(sel + ' [data-valor], ' + sel + ' [data-tipo]').forEach(el => {
+    el.addEventListener('change', calcAtual);
+  });
+}
+function sincronizarItem(input){
+  const wrap = input.closest('.critwrap');
+  input.closest('.crit').classList.toggle('on', input.checked);
+  const sub = wrap.querySelector('.sub');
+  if (sub) sub.hidden = !input.checked;
+}
+function sincronizarTodos(){ $$('.crit input').forEach(sincronizarItem); }
+
+function renderPesos(){
+  const linhas = [];
+  CRITERIOS.forEach((c, i) => {
+    linhas.push('<div class="pesorow"><input type="number" step="1" min="0" data-w="' + c.id + '" value="' + nPeso(c.id) + '">' +
+                '<span>' + (i + 1) + '. ' + esc(c.txt) + (c.porQtd ? ' (por pessoa)' : '') + '</span></div>');
+    (c.subs || []).forEach(s => {
+      if (s.id === c.porQtd) return;
+      linhas.push('<div class="pesorow filho"><input type="number" step="1" min="0" data-w="' + s.id + '" value="' + nPeso(s.id) + '">' +
+                  '<span>↳ ' + esc(s.rot) + '</span></div>');
+    });
+  });
+  $('#pesolist').innerHTML = linhas.join('');
+  $$('#pesolist input').forEach(inp => inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    pesos[inp.dataset.w] = isNaN(v) || v < 0 ? 0 : v;
+    salvarPesos();
+    refletirPesos(); calcAtual(); renderTabela();
+  }));
+}
+function refletirPesos(){
+  $$('[data-peso]').forEach(tag => {
+    const v = nPeso(tag.dataset.peso);
+    const c = CRITERIOS.find(x => x.id === tag.dataset.peso);
+    tag.textContent = ptLabel(v) + (c && c.porQtd ? ' cada' : '');
+    tag.style.display = (v === 0 && tag.closest('.sub')) ? 'none' : '';
+  });
+  $('#totalMax').textContent = 'de ' + pontosMax();
+}
+
+/* ---------- leitura do formulário ---------- */
+const marcados = () => $$('#criterios .crit input:checked').map(i => i.value);
+const docsMarcados = () => $$('#documentos .crit input:checked').map(i => i.value);
+function valores(){
+  const v = {};
+  $$('[data-valor]').forEach(el => { if (el.value.trim()) v[el.dataset.valor] = el.value.trim(); });
+  SUBS.filter(s => s.tipo === 'tipos').forEach(s => {
+    const m = $$('[data-tipo="' + s.id + '"]:checked').map(i => i.value);
+    if (m.length) v[s.id] = m;
+  });
+  return v;
+}
+const calcAtual = () => { $('#totalAtual').textContent = pontos({docs: docsMarcados(), marcados: marcados(), valores: valores()}); };
+
+/* ---------- ranking ---------- */
+function ordenados(){
+  return pessoas.slice().sort((a, b) =>
+    pontos(b) - pontos(a) ||
+    (a.criadoEm || '').localeCompare(b.criadoEm || '') ||
+    String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+}
+function detalheSub(p, c){
+  const partes = [];
+  (c.subs || []).forEach(s => {
+    const v = (p.valores || {})[s.id];
+    if (Array.isArray(v) && v.length) partes.push(v.join(', '));
+    else if (v) partes.push(v);
+  });
+  return partes.join(' · ');
+}
+function renderTabela(){
+  const q = $('#busca').value.trim().toLowerCase();
+  let i = 0, ant = null, posic = 0;
+  const linhas = ordenados().map(p => {
+    const pt = pontos(p); i++;
+    if (pt !== ant){ posic = i; ant = pt; }
+    return {p: p, pt: pt, pos: posic};
+  }).filter(o => !q || [o.p.nome, o.p.inscricao].join(' ').toLowerCase().indexOf(q) > -1);
+
+  $('#vazio').style.display = linhas.length ? 'none' : 'block';
+  $('#vazio').textContent = pessoas.length ? 'Nenhum resultado para a busca.' : 'Nenhuma ficha cadastrada ainda.';
+
+  $('#tbody').innerHTML = linhas.map(o => {
+    return '<tr>' +
+      '<td class="insc">' + esc(o.p.inscricao || '—') + '</td>' +
+      '<td><a href="#" data-ver="' + o.p.id + '" style="color:inherit;font-weight:600">' + esc(o.p.nome) + '</a>' +
+        (textoFalta(o.p.docs) ? '<br><span class="tag-elim">' + textoFalta(o.p.docs) + '</span>' : '') + '</td>' +
+      '<td><div class="chips">' + ((o.p.docs || []).map(id => {
+          const d = DOCUMENTOS.find(x => x.id === id); if (!d) return '';
+          return '<span class="chip doc" title="' + esc(d.txt) + '"><b>' + idx(id) + '</b> ' + esc(d.curto) + '</span>';
+        }).join('') || '<span style="color:var(--vazio)">—</span>') + '</div></td>' +
+      '<td><div class="chips">' + ((o.p.marcados || []).map(id => {
+          const c = CRITERIOS.find(x => x.id === id); if (!c) return '';
+          const det = detalheSub(o.p, c);
+          return '<span class="chip" title="' + esc(c.txt) + '"><b>' + idx(id) + '</b> ' + esc(c.curto) +
+                 (det ? ' (' + esc(det) + ')' : '') + '</span>';
+        }).join('') || '<span style="color:var(--vazio)">—</span>') + '</div></td>' +
+      '<td class="pts">' + o.pt + '</td>' +
+      '<td class="acts noprint">' +
+        '<button type="button" class="btn-ghost" data-edit="' + o.p.id + '">Editar</button> ' +
+        '<button type="button" class="btn-danger" data-del="' + o.p.id + '">Excluir</button>' +
+      '</td></tr>';
+  }).join('');
+}
+
+/* ---------- formulário ---------- */
+function preencher(p){
+  $('#inscricao').value = p.inscricao || '';
+  $('#nome').value = p.nome || '';
+  $('#data').value = p.data || '';
+  $('#obs').value = p.obs || '';
+  const m = (p.marcados || []).concat(p.docs || []), v = p.valores || {};
+  $$('.crit input').forEach(i => { i.checked = m.indexOf(i.value) > -1; });
+  $$('[data-valor]').forEach(el => { el.value = v[el.dataset.valor] || ''; });
+  $$('[data-tipo]').forEach(el => {
+    const lista = v[el.dataset.tipo];
+    el.checked = Array.isArray(lista) && lista.indexOf(el.value) > -1;
+  });
+  sincronizarTodos(); calcAtual();
+}
+function limpar(){
+  editId = null;
+  ['inscricao','nome','obs'].forEach(id => { $('#' + id).value = ''; });
+  $('#data').value = hojeISO();
+  $$('.crit input').forEach(i => { i.checked = false; });
+  $$('[data-valor]').forEach(el => { el.value = ''; });
+  $$('[data-tipo]').forEach(el => { el.checked = false; });
+  sincronizarTodos();
+  $('#formTitle').textContent = '1 — Dados do Protocolo';
+  $('#btnSalvar').textContent = 'Adicionar à lista';
+  $('#btnCancelar').hidden = true;
+  calcAtual();
+}
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const dados = {
+    inscricao: $('#inscricao').value.trim(),
+    nome: $('#nome').value.trim() || '(sem nome)',
+    data: $('#data').value,
+    obs: $('#obs').value.trim(),
+    docs: docsMarcados(),
+    marcados: marcados(),
+    valores: valores()
+  };
+  const btn = $('#btnSalvar');
+  btn.disabled = true;
+  try {
+    const q = editId
+      ? sb.from(T_FICHAS).update(paraDb(dados)).eq('id', editId)
+      : sb.from(T_FICHAS).insert(paraDb(dados));
+    const r = await q.select().single();
+    if (r.error) throw r.error;
+    guardarLocal(deDb(r.data));
+    toast(editId ? 'Ficha de ' + dados.nome + ' atualizada.'
+                 : dados.nome + ' adicionado(a) com ' + ptLabel(pontos(dados)) + '.');
+    limpar(); renderTabela();
+    $('#form').scrollIntoView({behavior:'smooth', block:'start'});
+  } catch (err) {
+    falha(err, 'salvar a ficha');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+$('#btnLimpar').onclick = limpar;
+$('#btnCancelar').onclick = limpar;
+$('#busca').oninput = renderTabela;
+
+/* ---------- número da inscrição: digite só os números ---------- */
+const ANO_FICHA = '2026';
+$('#inscricao').addEventListener('input', () => {
+  const el = $('#inscricao');
+  const d = String(el.value).split('/')[0].replace(/\D/g, '').slice(0, 6);
+  el.value = d ? d + '/' + ANO_FICHA : '';
+  const p = el.value.indexOf('/');
+  if (p > -1) el.setSelectionRange(p, p);
+});
+$('#inscricao').addEventListener('blur', () => {
+  if (!/[0-9]/.test($('#inscricao').value)) $('#inscricao').value = '';
+});
+
+/* ---------- modo claro / noturno ---------- */
+function aplicarTema(t){
+  document.documentElement.setAttribute('data-theme', t);
+  $('#tema').textContent = t === 'dark' ? 'Modo claro' : 'Modo noturno';
+  try { localStorage.setItem(K_T, t); } catch (e) {}
+}
+$('#tema').onclick = () =>
+  aplicarTema(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+$('#tema').textContent =
+  document.documentElement.getAttribute('data-theme') === 'dark' ? 'Modo claro' : 'Modo noturno';
+
+$('#resetPesos').onclick = () => {
+  pesos = Object.assign({}, PESOS_PADRAO);
+  salvarPesos();
+  renderPesos(); refletirPesos(); calcAtual(); renderTabela();
+  toast('Pesos restaurados: 10 pontos por item.');
+};
+
+$('#tbody').addEventListener('click', e => {
+  const ver = e.target.closest('[data-ver]');
+  const ed  = e.target.closest('[data-edit]');
+  const del = e.target.closest('[data-del]');
+  if (ver){ e.preventDefault(); detalhes(ver.dataset.ver); }
+  if (ed){
+    const p = pessoas.find(x => x.id === ed.dataset.edit);
+    if (!p) return;
+    editId = p.id; preencher(p);
+    $('#formTitle').textContent = '1 — Editando: ' + p.nome;
+    $('#btnSalvar').textContent = 'Salvar alterações';
+    $('#btnCancelar').hidden = false;
+    $('#form').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  if (del){
+    const p = pessoas.find(x => x.id === del.dataset.del);
+    if (!p) return;
+    perguntar('Excluir a ficha de "' + p.nome + '"?', 'Excluir').then(async ok => {
+      if (!ok) return;
+      const r = await sb.from(T_FICHAS).delete().eq('id', p.id);
+      if (r.error) return falha(r.error, 'excluir a ficha');
+      pessoas = pessoas.filter(x => x.id !== p.id);
+      if (editId === p.id) limpar();
+      renderTabela(); toast('Ficha excluída.');
+    });
+  }
+});
+
+function detalhes(id){
+  const p = pessoas.find(x => x.id === id);
+  if (!p) return;
+  const v = p.valores || {};
+  $('#dlgNome').textContent = p.nome + ' — ' + ptLabel(pontos(p)) + ' de ' + pontosMax();
+
+  const entregues = DOCUMENTOS.filter(d => (p.docs || []).indexOf(d.id) > -1);
+  const faltando  = DOCUMENTOS.filter(d => (p.docs || []).indexOf(d.id) < 0);
+  const semPonto = txt => txt.replace(/\.$/, '');
+
+  const linhas = [
+    ['Número da inscrição', p.inscricao],
+    ['Data', dataBR(p.data)],
+    ['Documentação do titular', (p.docs || []).length + ' de ' + DOCUMENTOS.length + ' itens entregues'],
+    ['Situação', textoFalta(p.docs) || 'Documentos obrigatórios entregues'],
+    ['Observações', p.obs]
+  ];
+  let html = linhas.map(l => '<dt>' + l[0] + '</dt><dd>' + esc(l[1] || '—') + '</dd>').join('');
+
+  html += '<dt>Documentos entregues</dt><dd>' + (entregues.map(d =>
+      esc(semPonto(d.txt)) + (d.campo && v[d.campo.id] ? ' <b>(' + esc(v[d.campo.id]) + ')</b>' : '')
+    ).join('<br>') || '—') + '</dd>';
+  html += '<dt>Documentos pendentes</dt><dd>' + (faltando.map(d => esc(semPonto(d.txt))).join('<br>') || 'Nenhum') + '</dd>';
+  html += '<dt>Critérios de pontuação</dt><dd>' + ((p.marcados || []).map(i => {
+      const c = CRITERIOS.find(x => x.id === i); if (!c) return '';
+      const det = detalheSub(p, c);
+      return idx(i) + '. ' + esc(semPonto(c.txt)) + (det ? ' — ' + esc(det) : '') + ' <b>(' + ptLabel(ptsItem(p, c)) + ')</b>';
+    }).join('<br>') || '—') + '</dd>';
+
+  $('#dlgBody').innerHTML = html;
+  $('#dlg').showModal();
+}
+$('#dlgFechar').onclick = () => $('#dlg').close();
+
+/* ---------- exportar / backup ---------- */
+function baixar(nome, conteudo, tipo){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([conteudo], {type: tipo}));
+  a.download = nome; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(a.href);
+}
+function entregar(nome, conteudo, tipo){ baixar(nome, conteudo, tipo); toast('Arquivo ' + nome + ' baixado.'); }
+function abrirTexto(titulo, dica, conteudo, importar){
+  $('#txtTit').textContent = titulo;
+  $('#txtHint').textContent = dica;
+  $('#txtArea').value = conteudo;
+  $('#txtImportar').hidden = !importar;
+  $('#dlgTxt').showModal();
+  if (!importar) $('#txtArea').select();
+}
+$('#txtFechar').onclick = () => $('#dlgTxt').close();
+$('#txtCopiar').onclick = () => {
+  const a = $('#txtArea'); a.select();
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(a.value).then(() => toast('Copiado.'), () => toast('Use Ctrl+C para copiar.'));
+  } else toast('Use Ctrl+C para copiar.');
+};
+$('#txtImportar').onclick = () => { aplicarBackup($('#txtArea').value); };
+
+function aplicarBackup(texto){
+  let d;
+  try { d = JSON.parse(texto); } catch (e) { toast('O arquivo não é um backup válido.'); return; }
+  if (!d || !Array.isArray(d.pessoas)){ toast('O backup não tem a lista de fichas.'); return; }
+  perguntar('Importar ' + d.pessoas.length + ' ficha(s) do backup para a lista? Fichas que já estão na lista são atualizadas, as demais continuam como estão.', 'Importar')
+    .then(async ok => {
+      if (!ok) return;
+      const r = await sb.from(T_FICHAS).upsert(d.pessoas.map(paraDbComId), {defaultToNull: false});
+      if (r.error) return falha(r.error, 'importar o backup');
+      if (d.pesos){ pesos = Object.assign({}, PESOS_PADRAO, d.pesos); salvarPesos(); }
+      $('#dlgTxt').close();
+      await carregar();
+      toast('Backup importado.');
+    });
+}
+
+const hoje = () => new Date().toISOString().slice(0, 10);
+
+$('#btnCsv').onclick = () => {
+  if (!pessoas.length) return toast('Nada para exportar.');
+  const head = ['Posição','Nº da inscrição','Nome do candidato','Data','Situação']
+    .concat(DOCUMENTOS.map((d, i) => 'Doc. ' + (i + 1) + '. ' + d.curto))
+    .concat(CRITERIOS.map((c, i) => (i + 1) + '. ' + c.curto + ' (' + nPeso(c.id) + 'pt)'))
+    .concat(SUBS.map(s => s.rot))
+    .concat(['Pontos','Observações']);
+  let i = 0, ant = null, posic = 0;
+  const linhas = ordenados().map(p => {
+    const pt = pontos(p); i++;
+    if (pt !== ant){ posic = i; ant = pt; }
+    return [posic + 'º', p.inscricao, p.nome, dataBR(p.data),
+        textoFalta(p.docs) || 'OK']
+      .concat(DOCUMENTOS.map(d => (p.docs || []).indexOf(d.id) > -1 ? 'X' : ''))
+      .concat(CRITERIOS.map(c => (p.marcados || []).indexOf(c.id) > -1 ? 'X' : ''))
+      .concat(SUBS.map(s => { const v = (p.valores || {})[s.id]; return Array.isArray(v) ? v.join(', ') : (v || ''); }))
+      .concat([pt, p.obs]);
+  });
+  const csv = [head].concat(linhas)
+    .map(l => l.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  entregar('ranking-ituverava-' + hoje() + '.csv', '﻿' + csv, 'text/csv;charset=utf-8',
+    'Planilha do ranking', 'Copie tudo, cole num arquivo .csv e abra no Excel.');
+};
+
+$('#btnBackup').onclick = () => entregar('backup-ituverava-' + hoje() + '.json',
+  JSON.stringify({pesos: pesos, pessoas: pessoas}, null, 2), 'application/json',
+  'Backup das fichas', 'Copie tudo e guarde num arquivo de texto. Para voltar, use "Restaurar backup".');
+
+$('#btnRestore').onclick = () => {
+  $('#fileIn').click();
+};
+$('#fileIn').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => aplicarBackup(r.result);
+  r.readAsText(f);
+  e.target.value = '';
+};
+$('#btnPrint').onclick = () => window.print();
+$('#btnZerar').onclick = () => {
+  if (!pessoas.length) return toast('A lista já está vazia.');
+  perguntar('Apagar TODAS as ' + pessoas.length + ' fichas da lista compartilhada, para todos os usuários? Salve um backup antes. Esta ação não pode ser desfeita.', 'Apagar tudo')
+    .then(async ok => {
+      if (!ok) return;
+      const r = await sb.from(T_FICHAS).delete().not('id', 'is', null);
+      if (r.error) return falha(r.error, 'apagar a lista');
+      pessoas = []; limpar(); renderTabela(); toast('Lista apagada.');
+    });
+};
+
+/* ---------- sincronização ---------- */
+async function carregar(){
+  const res = await Promise.all([
+    sb.from(T_FICHAS).select('*').order('criado_em'),
+    sb.from(T_CONFIG).select('pesos').eq('id', 1).maybeSingle()
+  ]);
+  if (res[0].error) return falha(res[0].error, 'carregar a lista');
+  pessoas = res[0].data.map(deDb);
+  if (!res[1].error && res[1].data) pesos = Object.assign({}, PESOS_PADRAO, res[1].data.pesos || {});
+  renderPesos(); refletirPesos(); calcAtual(); renderTabela();
+}
+
+function assinar(){
+  if (canal) return;
+  canal = sb.channel('triagem-ituverava')
+    .on('postgres_changes', {event: '*', schema: 'public', table: T_FICHAS}, ev => {
+      if (ev.eventType === 'DELETE'){
+        const id = ev.old && ev.old.id;
+        pessoas = pessoas.filter(x => x.id !== id);
+        if (editId && editId === id){ limpar(); toast('A ficha em edição foi excluída por outro usuário.'); }
+      } else {
+        guardarLocal(deDb(ev.new));
+      }
+      renderTabela();
+    })
+    .on('postgres_changes', {event: 'UPDATE', schema: 'public', table: T_CONFIG}, ev => {
+      pesos = Object.assign({}, PESOS_PADRAO, ev.new.pesos || {});
+      if (!$('#pesolist').contains(document.activeElement)) renderPesos();
+      refletirPesos(); calcAtual(); renderTabela();
+    })
+    .subscribe();
+}
+
+/* fichas salvas neste navegador antes da lista compartilhada */
+async function migrarLocal(){
+  const locais = load(K_P, []);
+  if (!Array.isArray(locais) || !locais.length) return;
+  const ok = await perguntar('Este navegador tem ' + locais.length + ' ficha(s) salva(s) antes da lista compartilhada. Enviar para a lista de todos?', 'Enviar');
+  if (!ok) return;
+  const r = await sb.from(T_FICHAS).upsert(locais.map(paraDbComId), {defaultToNull: false});
+  if (r.error) return falha(r.error, 'enviar as fichas');
+  save(K_P + '.enviado', locais);
+  try { localStorage.removeItem(K_P); } catch (e) {}
+  await carregar();
+  toast(locais.length + ' ficha(s) enviada(s) para a lista.');
+}
+
+function tela(qual){
+  $('#carregando').hidden = qual !== 'carregando';
+  $('#telaLogin').hidden = qual !== 'login';
+  $('#app').hidden = qual !== 'app';
+  $('#sessao').hidden = qual !== 'app';
+}
+function erroLogin(msg){
+  $('#loginErro').textContent = msg || '';
+  $('#loginErro').hidden = !msg;
+}
+
+async function entrarNoApp(session){
+  if (usuarioAtual === session.user.id) return;
+  const r = await sb.rpc(RPC_EQUIPE);
+  if (r.error){ tela('login'); erroLogin('Não foi possível conferir o acesso. Verifique a internet e tente de novo.'); return; }
+  if (!r.data){
+    const email = session.user.email;
+    await sb.auth.signOut();
+    tela('login');
+    erroLogin('O e-mail ' + email + ' não está autorizado. Peça para a coordenação liberar o acesso.');
+    return;
+  }
+  usuarioAtual = session.user.id;
+  $('#usuario').textContent = session.user.email;
+  erroLogin('');
+  tela('app');
+  await carregar();
+  assinar();
+  migrarLocal();
+}
+function sairDoApp(){
+  usuarioAtual = null;
+  if (canal){ sb.removeChannel(canal); canal = null; }
+  pessoas = []; limpar(); renderTabela();
+  tela('login');
+}
+
+$('#formLogin').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#loginEmail').value.trim(), senha = $('#loginSenha').value;
+  if (!email || !senha) return erroLogin('Preencha o e-mail e a senha.');
+  $('#btnEntrar').disabled = true; erroLogin('');
+  const r = await sb.auth.signInWithPassword({email: email, password: senha});
+  $('#btnEntrar').disabled = false;
+  if (r.error){
+    erroLogin(/invalid/i.test(r.error.message) ? 'E-mail ou senha incorretos.' : 'Não foi possível entrar. Verifique a internet e tente de novo.');
+    return;
+  }
+  $('#loginSenha').value = '';
+});
+$('#btnSair').onclick = () => sb.auth.signOut();
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && usuarioAtual) carregar();
+});
+
+/* ---------- início ---------- */
+render('#documentos', DOCUMENTOS, false);
+render('#criterios', CRITERIOS, true);
+renderPesos(); refletirPesos(); limpar(); renderTabela();
+
+if (!sb){
+  $('#carregando').textContent = 'Não foi possível carregar o sistema. Verifique a internet e recarregue a página.';
+} else {
+  sb.auth.onAuthStateChange((ev, session) => {
+    /* chamadas ao banco fora do callback, como pede a biblioteca */
+    setTimeout(() => {
+      if (session) entrarNoApp(session);
+      else if (ev === 'SIGNED_OUT' || ev === 'INITIAL_SESSION') sairDoApp();
+    }, 0);
+  });
+}
+</script>
+</body>
+</html>
