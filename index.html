@@ -857,9 +857,21 @@ $('#btnZerar').onclick = () => {
 };
 
 /* ---------- sincronização ---------- */
+/* o Supabase entrega no máximo 1000 linhas por pedido: busca de 1000 em 1000 até acabar */
+async function buscarFichas(){
+  const PAGINA = 1000;
+  let todas = [];
+  for (let de = 0; ; de += PAGINA){
+    const r = await sb.from(T_FICHAS).select('*').order('criado_em').order('id').range(de, de + PAGINA - 1);
+    if (r.error) return {error: r.error};
+    todas = todas.concat(r.data);
+    if (r.data.length < PAGINA) return {data: todas};
+  }
+}
+
 async function carregar(){
   const res = await Promise.all([
-    sb.from(T_FICHAS).select('*').order('criado_em'),
+    buscarFichas(),
     sb.from(T_CONFIG).select('pesos').eq('id', 1).maybeSingle()
   ]);
   if (res[0].error) return falha(res[0].error, 'carregar a lista');
